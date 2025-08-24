@@ -28,6 +28,7 @@ public class AgentDAO {
         cv.put(DBContract.Agents.COLUMN_PASSWORD_HASH, pwdHash);
         cv.put(DBContract.Agents.COLUMN_SALT, randomSalt);
         cv.put(DBContract.Agents.COLUMN_SECURITY_QUESTION, securityQuestion);
+        cv.put(DBContract.Agents.COLUMN_SECURITY_ANSWER_HASH, secAnsHash);
         cv.put(DBContract.Agents.COLUMN_CLEARANCE_CODE, clearanceCode);
         cv.put(DBContract.Agents.COLUMN_BIOMETRIC_ENABLED, 0);
         cv.put(DBContract.Agents.COLUMN_ACCOUNT_LOCKED, 0);

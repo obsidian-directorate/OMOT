@@ -1,0 +1,36 @@
+package org.obsidian.omot.data.repo;
+
+import android.database.Cursor;
+
+import org.obsidian.omot.core.util.Result;
+import org.obsidian.omot.data.db.dao.AgentDAO;
+
+public class AgentRepository {
+    private final AgentDAO dao;
+
+    public AgentRepository(AgentDAO dao) {
+        this.dao = dao;
+    }
+
+    public Result<Boolean> registerAgent(String agentId, String codename, String cipherKeyPlain,
+                                         String securityQuestion, String securityAnswerPlain, String clearanceCode) {
+        try {
+            boolean inserted = dao.insertAgent(agentId, codename, cipherKeyPlain, securityQuestion, securityAnswerPlain, clearanceCode);
+            if (!inserted) {
+                return Result.failure(new Exception("Failed to insert agent"));
+            }
+            return Result.success(true);
+        } catch (Exception e) {
+            return Result.failure(e);
+        }
+    }
+
+    public Result<Cursor> findByCodename(String codename) {
+        try {
+            Cursor c = dao.findByCodename(codename);
+            return Result.success(c);
+        } catch (Exception e) {
+            return Result.failure(e);
+        }
+    }
+}
