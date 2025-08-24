@@ -2,6 +2,7 @@ package org.obsidian.omot.data.repo;
 
 import android.database.Cursor;
 
+import org.obsidian.omot.core.util.Logs;
 import org.obsidian.omot.core.util.Result;
 import org.obsidian.omot.data.db.dao.AgentDAO;
 
@@ -17,8 +18,10 @@ public class AgentRepository {
         try {
             boolean inserted = dao.insertAgent(agentId, codename, cipherKeyPlain, securityQuestion, securityAnswerPlain, clearanceCode);
             if (!inserted) {
+                Logs.write(agentId, "REGISTER_FAIL", "Codename: " + codename);
                 return Result.failure(new Exception("Failed to insert agent"));
             }
+            Logs.write(agentId, "REGISTER_SUCCESS", "Codename: " + codename);
             return Result.success(true);
         } catch (Exception e) {
             return Result.failure(e);
