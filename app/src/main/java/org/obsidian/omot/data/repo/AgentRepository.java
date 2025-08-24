@@ -4,6 +4,7 @@ import android.database.Cursor;
 
 import org.obsidian.omot.core.util.Logs;
 import org.obsidian.omot.core.util.Result;
+import org.obsidian.omot.core.util.Validators;
 import org.obsidian.omot.data.db.dao.AgentDAO;
 
 public class AgentRepository {
@@ -15,6 +16,16 @@ public class AgentRepository {
 
     public Result<Boolean> registerAgent(String agentId, String codename, String cipherKeyPlain,
                                          String securityQuestion, String securityAnswerPlain, String clearanceCode) {
+        if (!Validators.isCodenameValid(codename)) {
+            return Result.failure(new Exception("Invalid codename"));
+        }
+        if (!Validators.isClearanceValid(clearanceCode)) {
+            return Result.failure(new Exception("Invalid clearance code"));
+        }
+        if (!Validators.isCipherKeyStrong(cipherKeyPlain)) {
+            return Result.failure(new Exception("Cipher key too weak"));
+        }
+
         try {
             boolean inserted = dao.insertAgent(agentId, codename, cipherKeyPlain, securityQuestion, securityAnswerPlain, clearanceCode);
             if (!inserted) {
