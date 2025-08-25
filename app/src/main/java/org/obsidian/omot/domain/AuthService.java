@@ -85,4 +85,16 @@ public class AuthService {
             return Result.failure(e);
         }
     }
+
+    public Result<Boolean> recoverCipherKey(String codename, String answerPlain, String newCipherKey) {
+        try {
+            Result<Boolean> verify = agentRepo.verifySecurityAnswer(codename, answerPlain);
+            if (!verify.isSuccess() || !verify.getData()) {
+                return Result.failure(new Exception("Recovery failed: wrong answer"));
+            }
+            return agentRepo.resetCipherKey(codename, newCipherKey);
+        } catch (Exception e) {
+            return Result.failure(e);
+        }
+    }
 }

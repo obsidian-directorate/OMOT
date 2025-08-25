@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.obsidian.omot.core.crypto.Hashing;
 import org.obsidian.omot.core.util.Logs;
 import org.obsidian.omot.core.util.Result;
 import org.obsidian.omot.core.util.Validators;
@@ -74,5 +75,66 @@ public class AgentRepository {
         cv.put(DBContract.Agents.COLUMN_FAILED_LOGIN_ATTEMPTS, 0);
         cv.put(DBContract.Agents.COLUMN_ACCOUNT_LOCKED, 0);
         db.update(DBContract.Agents.TB_NAME, cv, DBContract.Agents.COLUMN_AGENT_ID + " = ?", new String[]{agentId});
+    }
+
+    public Result<String> getSecurityQuestion(String codename) {
+        try {
+            Cursor c = dao.findByCodename(codename);
+            if (c == null || !c.moveToFirst()) {
+                return Result.failure(new Exception("Codename not found"));
+            }
+            String question = c.getString(c.getColumnIndexOrThrow(DBContract.Agents.COLUMN_SECURITY_QUESTION));
+            String agentId = c.getString(c.getColumnIndexOrThrow(DBContract.Agents.COLUMN_AGENT_ID));
+            Logs.write(agentId, "RECOVERY_ATTEMPT", "Security question requested");
+            return Result.success(question);
+        } catch (Exception e) {
+            return Result.failure(e);
+        }
+    }
+
+    public Result<Boolean> verifySecurityAnswer(String codename, String answerPlain) {
+        try {
+            Cursor c = dao.findByCodename(codename);
+            if (c == null || !c.moveToFirst()) {
+                return Result.failure(new Exception("Codename not found"));
+            }
+            String agentId = c.getString(c.getColumnIndexOrThrow(DBContract.Agents.COLUMN_AGENT_ID));
+            String hash = c.getString(c.getColumnIndexOrThrow(DBContract.Agents.COLUMN_SECURITY_ANSWER_HASH));
+
+            boolean ok = Hashing.bcryptVerify(answerPlain, hash);
+            if (ok) {
+                Logs.write(agentId, "RECOVERY_SUCCESS", "Security answer correct");
+                return Result.success(true);
+            } else {
+                Logs.write(agentId, "RECOVERY_FAIL", "Wrong security answer");
+                return Result.failure(new Exception("Wrong recovery answer"));
+            }
+        } catch (Exception e) {
+            return Result.failure(e);
+        }
+    }
+
+    public Result<Boolean> resetCipherKey(String codename, String newCipherKey) {
+        try {
+            Cursor c = dao.findByCodename(codename);
+            if (c == null || !c.moveToFirst()) {
+                return Result.failure(new Exception("Codename not found"));
+            }
+            String agentId = c.getString(c.getColumnIndexOrThrow(DBContract.Agents.COLUMN_AGENT_ID));
+
+            String newHash = Hashing.bcryptHash(newCipherKey, 12);
+
+            SQLiteDatabase db = helper.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(DBContract.Agents.COLUMN_PASSWORD_HASH, newHash);
+            cv.put(DBContract.Agents.COLUMN_FAILED_LOGIN_ATTEMPTS, 0);
+            cv.put(DBContract.Agents.COLUMN_ACCOUNT_LOCKED, 0);
+            db.update(DBContract.Agents.TB_NAME, cv, DBContract.Agents.COLUMN_CODENAME + " = ?", new String[]{codename});
+
+            Logs.write(agentId, "CIPHER_RESET", "Cipher key reset via recovery");
+            return Result.success(true);
+        } catch (Exception e) {
+            return Result.failure(e);
+        }
     }
 }
