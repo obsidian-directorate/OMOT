@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.annotation)
     implementation(libs.appcompat)
+    implementation(libs.androidx.biometric)
     implementation(libs.constraintlayout)
     implementation(libs.security.crypto)
 

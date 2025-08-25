@@ -1,14 +1,19 @@
 package org.obsidian.omot.data.repo;
 
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import org.obsidian.omot.core.util.Logs;
 import org.obsidian.omot.core.util.Result;
 import org.obsidian.omot.core.util.Validators;
+import org.obsidian.omot.data.db.DBContract;
+import org.obsidian.omot.data.db.DBHelper;
 import org.obsidian.omot.data.db.dao.AgentDAO;
 
 public class AgentRepository {
     private final AgentDAO dao;
+    DBHelper helper;
 
     public AgentRepository(AgentDAO dao) {
         this.dao = dao;
@@ -46,5 +51,28 @@ public class AgentRepository {
         } catch (Exception e) {
             return Result.failure(e);
         }
+    }
+
+    public void incrementFailedAttempts(String agentId, int fails, long ts) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(DBContract.Agents.COLUMN_FAILED_LOGIN_ATTEMPTS, fails);
+        cv.put(DBContract.Agents.COLUMN_LAST_FAILED_LOGIN_TIMESTAMP, ts);
+        db.update(DBContract.Agents.TB_NAME, cv, DBContract.Agents.COLUMN_AGENT_ID + " = ?", new String[]{agentId});
+    }
+
+    public void lockAccount(String agentId) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(DBContract.Agents.COLUMN_ACCOUNT_LOCKED, 1);
+        db.update(DBContract.Agents.TB_NAME, cv, DBContract.Agents.COLUMN_AGENT_ID + " = ?", new String[]{agentId});
+    }
+
+    public void resetFailedAttempts(String agentId) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(DBContract.Agents.COLUMN_FAILED_LOGIN_ATTEMPTS, 0);
+        cv.put(DBContract.Agents.COLUMN_ACCOUNT_LOCKED, 0);
+        db.update(DBContract.Agents.TB_NAME, cv, DBContract.Agents.COLUMN_AGENT_ID + " = ?", new String[]{agentId});
     }
 }
