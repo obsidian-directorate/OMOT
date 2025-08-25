@@ -33,11 +33,15 @@ android {
 
 dependencies {
     // Android
+    implementation(libs.activity)
     implementation(libs.annotation)
     implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.activity)
+    implementation(libs.androidx.biometric)
     implementation(libs.constraintlayout)
+    implementation(libs.security.crypto)
+
+    // Google
+    implementation(libs.material)
 
     // Others
     implementation(libs.jbcrypt)
