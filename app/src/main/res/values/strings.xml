@@ -8,8 +8,19 @@
     <string name="nav_comms">Comms</string>
     <string name="nav_tools">Tools</string>
 
+    <!-- Button texts -->
+    <string name="retinal_print">Retinal/Print Scan</string>
+    <string name="authenticate">Authenticate Clearance</string>
+
+    <!-- Hints -->
+    <string name="codename_hint">Codename</string>
+    <string name="cipher_key_codename">Cipher key</string>
+
     <!-- Texts -->
     <string name="splash_text">Authenticating Clearance…</string>
+
+    <!-- Titles -->
+    <string name="login_title">OMOT - Obsidian Directorate</string>
 
     <!-- Top navigation -->
     <string name="action_console">Console</string>

@@ -1,5 +1,7 @@
 package org.obsidian.omot.domain;
 
+import android.content.Context;
+
 import org.obsidian.omot.core.secure.SecurePrefs;
 
 import java.util.UUID;
@@ -10,8 +12,8 @@ public class SessionManager {
 
     private final SecurePrefs prefs;
 
-    public SessionManager(SecurePrefs prefs) {
-        this.prefs = prefs;
+    public SessionManager(Context context) {
+        prefs = new SecurePrefs(context);
     }
 
     public void startSession(String agentId) {

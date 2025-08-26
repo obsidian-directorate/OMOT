@@ -7,6 +7,8 @@ import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.obsidian.omot.R;
+import org.obsidian.omot.domain.SessionManager;
+import org.obsidian.omot.ui.auth.LoginActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -15,11 +17,12 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        new Handler().postDelayed(() -> {
+            SessionManager sm = new SessionManager(this);
+            if (sm.isSessionActive()) {
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                finish();
+            } else {
+                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
             }
         }, 2000);
     }
