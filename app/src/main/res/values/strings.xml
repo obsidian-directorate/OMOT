@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">OMOT</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_missions">Missions</string>
+    <string name="nav_dossiers">Dossiers</string>
+    <string name="nav_comms">Comms</string>
+    <string name="nav_tools">Tools</string>
+
+    <!-- Texts -->
+    <string name="splash_text">Authenticating Clearance…</string>
+
+    <!-- Top navigation -->
+    <string name="action_console">Console</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
