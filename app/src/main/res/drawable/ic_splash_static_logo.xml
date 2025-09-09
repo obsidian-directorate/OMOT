@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120"
+    android:tint="@color/obsidian_accent_blue">
+
+    <group>
+        <path
+            android:name="logo_body"
+            android:fillColor="@color/white"
+            android:pathData="M60,10 L70,30 L90,30 L75,45 L85,65 L60,55 L35,65 L45,45 L30,30 L50,30 Z" />
+    </group>
+
+    <path
+        android:name="scan_line"
+        android:strokeColor="@color/terminal_green"
+        android:strokeWidth="2"
+        android:pathData="M20,80 L100,80" />
+
+</vector>

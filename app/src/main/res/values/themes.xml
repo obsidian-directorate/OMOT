@@ -24,4 +24,12 @@
     </style>
 
     <style name="Theme.OMOT" parent="Base.Theme.OMOT" />
+
+    <style name="Theme.OMOT.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/obsidian_primary</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_animated_logo</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="android:windowSplashScreenBrandingImage" tools:ignore="NewApi">@drawable/obsidian_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.OMOT</item>
+    </style>
 </resources>

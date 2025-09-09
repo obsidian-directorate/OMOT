@@ -56,6 +56,9 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.viewmodel.savedstate)
 
+    // Splash screen API
+    implementation(libs.core.splashscreen)
+
     // Unit Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
