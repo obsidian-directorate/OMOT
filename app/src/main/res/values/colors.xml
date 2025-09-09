@@ -1,5 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Obsidian Core Palette -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="obsidian_primary">#FF0D0F14</color>
+    <color name="obsidian_accent_red">#FFE53935</color>
+    <color name="obsidian_accent_blue">#FF2196F3</color>
+    <color name="obsidian_accent_green">#FF4CAF50</color>
+    <color name="terminal_green">#FF64DD17</color>
+
+    <!-- Material 3 Semantic Colors (Dark theme) -->
+    <color name="md_theme_dark_primary">@color/obsidian_accent_blue</color>
+    <color name="md_theme_dark_onPrimary">@color/white</color>
+    <color name="md_theme_dark_primaryContainer">@color/obsidian_primary</color>
+    <color name="md_theme_dark_onPrimaryContainer">@color/obsidian_accent_blue</color>
+    <color name="md_theme_dark_secondary">@color/obsidian_accent_green</color>
+    <color name="md_theme_dark_onSecondary">@color/black</color>
+    <color name="md_theme_dark_secondaryContainer">#FF1B1B1B</color>
+    <color name="md_theme_dark_onSecondaryContainer">@color/obsidian_accent_green</color>
+    <color name="md_theme_dark_tertiary">@color/obsidian_accent_red</color>
+    <color name="md_theme_dark_onTertiary">@color/white</color>
+    <color name="md_theme_dark_tertiaryContainer">@color/obsidian_primary</color>
+    <color name="md_theme_dark_onTertiaryContainer">@color/obsidian_accent_red</color>
+    <color name="md_theme_dark_error">@color/obsidian_accent_red</color>
+    <color name="md_theme_dark_errorContainer">#FF2D0003</color>
+    <color name="md_theme_dark_onError">@color/white</color>
+    <color name="md_theme_dark_onErrorContainer">#FFFFD9D8</color>
+    <color name="md_theme_dark_background">@color/obsidian_primary</color>
+    <color name="md_theme_dark_onBackground">#FFE0E0E0</color>
+    <color name="md_theme_dark_surface">@color/obsidian_primary</color>
+    <color name="md_theme_dark_onSurface">@color/md_theme_dark_onBackground</color>
+    <color name="md_theme_dark_surfaceVariant">#FF1F2229</color>
+    <color name="md_theme_dark_onSurfaceVariant">#FFBDBDBD</color>
+    <color name="md_theme_dark_outline">#FF444444</color>
+    <color name="md_theme_dark_inverseOnSurface">#FF1A1A1A</color>
+    <color name="md_theme_dark_inverseSurface">#FFE0E0E0</color>
+    <color name="md_theme_dark_inversePrimary">@color/obsidian_accent_blue</color>
+    <color name="md_theme_dark_shadow">@color/black</color>
+    <color name="md_theme_dark_surfaceTint">@color/obsidian_primary</color>
+    <color name="md_theme_dark_outlineVariant">#FF444444</color>
+    <color name="md_theme_dark_scrim">@color/black</color>
 </resources>
