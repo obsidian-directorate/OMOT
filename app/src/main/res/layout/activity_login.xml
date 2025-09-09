@@ -1,10 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    android:fillViewport="true"
+    android:fitsSystemWindows="true"
+    android:background="?attr/colorSurface"
+    tools:context=".ui.auth.LoginActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_xlarge"
+        android:orientation="vertical">
+
+        <!-- Logo & title section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="48dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_splash_static_logo"
+                android:contentDescription="@string/login_title"
+                app:tint="@color/md_theme_dark_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:text="@string/login_title"
+                android:textAppearance="@style/TextAppearance.OMOT.Headline" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_mini"
+                android:text="@string/login_subtitle"
+                android:textAppearance="@style/TextAppearance.OMOT.Body" />
+
+        </LinearLayout>
+
+        <!-- Credentials input section -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.OMOT.TextInputLayout"
+            android:id="@+id/ed_layout_codename"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:hint="@string/codename_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_codename"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.OMOT.TextInputLayout"
+            android:id="@+id/ed_layout_cipher_key"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_large"
+            android:hint="@string/cipher_key_hint"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_cipher_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:imeOptions="actionDone"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Primary authenticate button -->
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.OMOT.Button.Primary"
+            android:id="@+id/btn_authenticate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_authenticate" />
+
+        <!-- Biometric auth button -->
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.OMOT.Button.Secondary"
+            android:id="@+id/btn_biometric"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_biometric"
+            android:drawableStart="@drawable/ic_fingerprint"
+            android:drawableTint="?attr/colorOnSecondary" />
+
+        <!-- Lost credentials link -->
+        <TextView
+            android:id="@+id/tv_lost_credentials"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:padding="@dimen/spacing_small"
+            android:text="@string/lost_credentials_link"
+            android:textAppearance="@style/TextAppearance.OMOT.Label" />
+
+        <!-- Registration section -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/spacing_xlarge"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:background="?attr/colorOutlineVariant" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/register_prompt_text"
+            android:textAppearance="@style/TextAppearance.OMOT.Body" />
+
+        <TextView
+            android:id="@+id/tv_register_link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="@dimen/spacing_small"
+            android:text="@string/register_link"
+            android:textAppearance="@style/TextAppearance.OMOT.Label" />
+
+        <!-- Legal footer -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/spacing_xxlarge"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_terms_text"
+                android:textAppearance="@style/TextAppearance.OMOT.Body"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/spacing_mini"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_terms_link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/terms_link"
+                android:textAppearance="@style/TextAppearance.OMOT.Label"
+                android:padding="@dimen/spacing_micro" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/divider"
+                android:textAppearance="@style/TextAppearance.OMOT.Body"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:paddingHorizontal="@dimen/spacing_micro" />
+
+            <TextView
+                android:id="@+id/tv_privacy_link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_link"
+                android:textAppearance="@style/TextAppearance.OMOT.Label"
+                android:padding="@dimen/spacing_micro" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

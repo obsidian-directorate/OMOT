@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">OMOT</string>
+
+    <!-- Button text -->
+    <string name="button_authenticate">AUTHENTICATE</string>
+    <string name="button_biometric">BIOMETRIC SCAN</string>
+
+    <!-- Hints -->
+    <string name="codename_hint">Codename</string>
+    <string name="cipher_key_hint">Cipher Key</string>
+
+    <!-- Links -->
+    <string name="lost_credentials_link">LOST CREDENTIALS PROTOCOL</string>
+    <string name="register_link">Request Directorate Access</string>
+    <string name="terms_link">Terms of Service</string>
+    <string name="privacy_link">Privacy Protocol</string>
+
+    <!-- Titles -->
+    <string name="login_title">OMOT TERMINAL</string>
+
+    <!-- Texts -->
+    <string name="register_prompt_text">New operative?</string>
+    <string name="login_terms_text">By authenticating, you agree to the Obsidian Directive.</string>
+
+    <!-- Subtitles -->
+    <string name="login_subtitle">OBSIDIAN MOBILE OPS TERMINAL</string>
+
+    <!-- Symbols -->
+    <string name="divider">|</string>
 </resources>

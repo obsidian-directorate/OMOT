@@ -37,6 +37,15 @@
         <item name="shapeAppearance">@style/ShapeAppearance.OMOT.MediumComponent</item>
     </style>
 
+    <!-- Text Input Layout Styles -->
+    <style name="Widget.OMOT.TextInputLayout"
+        parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="android:strokeColor">@color/obsidian_accent_blue</item>
+        <item name="hintTextColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.OMOT.MediumComponent</item>
+    </style>
+
     <!-- Shape Appearances -->
     <style name="ShapeAppearance.OMOT.MediumComponent"
         parent="ShapeAppearance.Material3.MediumComponent">

@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
+import org.osd.omot_app.ui.auth.LoginActivity;
+
 /**
  * The initial entry point of the OMOT application.
  * This activity displays the branded splash screen while performing
