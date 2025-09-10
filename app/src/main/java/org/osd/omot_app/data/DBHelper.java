@@ -1,6 +1,8 @@
 package org.osd.omot_app.data;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -69,7 +71,7 @@ public class DBHelper extends SQLiteOpenHelper {
      * Returns null if encryption fails.
      */
     @Nullable
-    private String encryptField(String plaintext) {
+    public String encryptField(String plaintext) {
         if (plaintext == null) return null;
         return cryptoManager.encrypt(plaintext);
     }
@@ -79,9 +81,38 @@ public class DBHelper extends SQLiteOpenHelper {
      * Returns null if decryption fails.
      */
     @Nullable
-    private String decryptField(String encryptedText) {
+    public String decryptField(String encryptedText) {
         if (encryptedText == null) return null;
         return cryptoManager.decrypt(encryptedText);
+    }
+
+    /**
+     * Insert an agent with encrypted sensitive fields.
+     */
+    public long insertAgent(ContentValues values) {
+        // Encrypt sensitive fields before inserting
+        String passwordHash = values.getAsString(DBContract.AgentEntry.COLUMN_PASSWORD_HASH);
+        if (passwordHash != null) {
+            values.put(DBContract.AgentEntry.COLUMN_PASSWORD_HASH, encryptField(passwordHash));
+        }
+
+        String salt = values.getAsString(DBContract.AgentEntry.COLUMN_SALT);
+        if (salt != null) {
+            values.put(DBContract.AgentEntry.COLUMN_SALT, encryptField(salt));
+        }
+
+        String securityQuestion = values.getAsString(DBContract.AgentEntry.COLUMN_SECURITY_QUESTION);
+        if (securityQuestion != null) {
+            values.put(DBContract.AgentEntry.COLUMN_SECURITY_QUESTION, encryptField(securityQuestion));
+        }
+
+        String securityAnswerHash = values.getAsString(DBContract.AgentEntry.COLUMN_SECURITY_ANSWER_HASH);
+        if (securityAnswerHash != null) {
+            values.put(DBContract.AgentEntry.COLUMN_SECURITY_ANSWER_HASH, encryptField(securityAnswerHash));
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.insert(DBContract.AgentEntry.TABLE_NAME, null, values);
     }
 
     /**
