@@ -1,10 +1,20 @@
 package org.osd.omot_app.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -14,13 +24,30 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.osd.omot_app.R;
+import org.osd.omot_app.data.repository.RepositoryProvider;
+import org.osd.omot_app.ui.main.MainActivity;
+import org.osd.omot_app.utils.UIFeedback;
+
+import java.security.KeyStore;
+import java.util.concurrent.Executor;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 public class LoginActivity extends AppCompatActivity {
+
+    private static final String TAG = "LoginActivity";
+    private static final String KEY_ALIAS = "OMOT_Biometric_Encryption_Key";
 
     private TextInputEditText edCodename, edCipherKey;
     private TextInputLayout edLayoutCodename, edLayoutCipherKey;
     private MaterialButton btnAuthenticate, btnBiometric;
     private TextView tvLostCredentials, tvRegisterLink, tvTermsLink, tvPrivacyLink;
+
+    private RepositoryProvider provider;
+    private BiometricPrompt prompt;
+    private BiometricPrompt.PromptInfo promptInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +62,25 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         initializeViews();
+        initializeDependencies();
+        setupBiometricAuth();
+        setupClickListeners();
     }
+
+    // ----------------------------------------
+    // ---------- Overridden methods ----------
+    // ----------------------------------------
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Clean up resources if needed
+    }
+
+
+    // --------------------------------------
+    // ---------- onCreate methods ----------
+    // --------------------------------------
 
     private void initializeViews() {
         edCodename = findViewById(R.id.ed_codename);
@@ -48,5 +93,253 @@ public class LoginActivity extends AppCompatActivity {
         tvRegisterLink = findViewById(R.id.tv_register_link);
         tvTermsLink = findViewById(R.id.tv_terms_link);
         tvPrivacyLink = findViewById(R.id.tv_privacy_link);
+    }
+
+    private void initializeDependencies() {
+        provider = RepositoryProvider.getInstance(this);
+    }
+
+    private void setupBiometricAuth() {
+        // Check biometric capabilities
+        BiometricManager manager = BiometricManager.from(this);
+        switch (manager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+            case BiometricManager.BIOMETRIC_SUCCESS:
+                Log.d(TAG, "Biometric authentication is available");
+                setupBiometricPrompt();
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
+                Log.d(TAG, "No biometric features available on this device");
+                btnBiometric.setVisibility(View.GONE);
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
+                Log.d(TAG, "Biometric features are currently unavailable");
+                btnBiometric.setVisibility(View.GONE);
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
+                Log.d(TAG, "No biometric credentials enrolled");
+                btnBiometric.setVisibility(View.GONE);
+                UIFeedback.showSnackbar(btnAuthenticate,
+                        getString(R.string.biometric_not_enrolled), true);
+                break;
+        }
+    }
+
+    private void setupClickListeners() {
+        btnAuthenticate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLogin();
+            }
+        });
+
+        btnBiometric.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (prompt != null && promptInfo != null) {
+                    prompt.authenticate(promptInfo);
+                }
+            }
+        });
+
+        tvLostCredentials.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showRecoveryProtocol();
+            }
+        });
+
+        tvRegisterLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showRegisterScreen();
+            }
+        });
+    }
+
+    // -------------------------------------
+    // ---------- Private methods ----------
+    // -------------------------------------
+
+    private void setupBiometricPrompt() {
+        Executor executor = ContextCompat.getMainExecutor(this);
+
+        prompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Log.e(TAG, "Biometric authentication error: " + errorCode + " - " + errString);
+                UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.biometric_error), true);
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                Log.i(TAG, "Biometric authentication succeeded");
+                UIFeedback.showSnackbar(btnBiometric, getString(R.string.biometric_success), false);
+
+                // TODO: Retrieve stored codename from EncryptedSharedPreferences and authenticate
+                // For now, we'll just show a success message
+                // authenticateWithBiometric();
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Log.w(TAG, "Biometric authentication failed");
+                UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.biometric_failed), true);
+            }
+        });
+
+        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle(getString(R.string.biometric_prompt_title))
+                .setSubtitle(getString(R.string.biometric_prompt_subtitle))
+                .setDescription(getString(R.string.biometric_prompt_description))
+                .setNegativeButtonText(getString(R.string.button_biometric_prompt_negative))
+                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+                .build();
+    }
+
+    private void attemptLogin() {
+        // Get input values
+        String codename = edCodename.getText().toString().trim();
+        String password = edCipherKey.getText().toString().trim();
+
+        // Validate inputs
+        if (codename.isEmpty()) {
+            edLayoutCodename.setError(getString(R.string.login_validation_codename_empty));
+            return;
+        } else {
+            edLayoutCodename.setError(null);
+        }
+
+        if (password.isEmpty()) {
+            edLayoutCipherKey.setError(getString(R.string.login_validation_password_empty));
+        } else {
+            edLayoutCipherKey.setError(null);
+        }
+
+        // Show loading state
+        btnAuthenticate.setEnabled(false);
+        btnAuthenticate.setText(R.string.authenticating);
+
+        // Attempt authentication on a background thread to avoid blocking UI
+        new Thread(() -> {
+            try {
+                // Simulate network/database delay for realism
+                Thread.sleep(1000);
+
+                runOnUiThread(() -> {
+                    performAuthentication(codename, password);
+                });
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                runOnUiThread(() -> {
+                    handleAuthenticationError();
+                });
+            }
+        }).start();
+    }
+
+    private void performAuthentication(String codename, String password) {
+        try {
+            var agentRepository = provider.getAgentRepository();
+            var agent = agentRepository.loginAgent(codename, password);
+
+            if (agent != null) {
+                // Authentication successful
+                UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.login_success), false);
+                Log.i(TAG, "Authentication successful for agent: " + codename);
+
+                // TODO: Store session in EncryptedSharedPreferences
+                // TODO: Navigate to MainActivity
+                navigateToMain();
+            } else {
+                // Authentication failed
+                UIFeedback.showSnackbar(btnAuthenticate,
+                        getString(R.string.login_failed_credentials), true);
+                Log.w(TAG, "Authentication failed for agent: " + codename);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Authentication error", e);
+            handleAuthenticationError();
+        } finally {
+            // Restore button state
+            btnAuthenticate.setEnabled(true);
+            btnAuthenticate.setText(R.string.button_authenticate);
+        }
+    }
+
+    private void handleAuthenticationError() {
+        UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.login_error_generic), true);
+        btnAuthenticate.setEnabled(true);
+        btnAuthenticate.setText(R.string.button_authenticate);
+    }
+
+    private void navigateToMain() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();   // Prevent returning to login with back button
+    }
+
+    private void showRecoveryProtocol() {
+        // TODO: Implement Lost Credentials Protocol flow
+        Toast.makeText(this, "Lost Credentials Protocol initiated", Toast.LENGTH_SHORT).show();
+    }
+
+    private void showRegisterScreen() {
+        // TODO: Implement user registration flow
+        Toast.makeText(this, "Directorate Access Request screen", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Generates a secret key for biometric authentication encryption.
+     * This is needed for more advanced biometric flows where you want to encrypt/decrypt data.
+     */
+    private void generateSecretKey() {
+        try {
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+
+            if (!keyStore.containsAlias(KEY_ALIAS)) {
+                KeyGenerator keyGenerator =
+                        KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES,
+                                "AndroidKeyStore");
+
+                keyGenerator.init(new KeyGenParameterSpec.Builder(
+                        KEY_ALIAS,
+                        KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                        .setUserAuthenticationRequired(true)
+                        .build());
+
+                keyGenerator.generateKey();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to generate secret key for biometrics", e);
+        }
+    }
+
+    /**
+     * Creates a cipher for biometric authentication. Used for more advanced flows.
+     */
+    private Cipher createCipher() {
+        try {
+            KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+            SecretKey secretKey = (SecretKey) keyStore.getKey(KEY_ALIAS, null);
+            
+            Cipher cipher = Cipher.getInstance(
+                    KeyProperties.KEY_ALGORITHM_AES + "/"
+                    + KeyProperties.BLOCK_MODE_CBC + "/"
+                    + KeyProperties.ENCRYPTION_PADDING_PKCS7
+            );
+            
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            return cipher;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to create cipher for biometrics", e);
+            return null;
+        }
     }
 }

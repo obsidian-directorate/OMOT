@@ -4,6 +4,14 @@
     <!-- Button text -->
     <string name="button_authenticate">AUTHENTICATE</string>
     <string name="button_biometric">BIOMETRIC SCAN</string>
+    <string name="button_biometric_prompt_negative">Use Cipher Key Instead</string>
+
+    <!-- Descriptions -->
+    <string name="biometric_prompt_description">Authenticate using your biometric credentials</string>
+
+    <!-- Edit text layouts -->
+    <string name="login_validation_codename_empty">Codename required for authentication</string>
+    <string name="login_validation_password_empty">Cipher key required for authentication</string>
 
     <!-- Hints -->
     <string name="codename_hint">Codename</string>
@@ -15,15 +23,31 @@
     <string name="terms_link">Terms of Service</string>
     <string name="privacy_link">Privacy Protocol</string>
 
+    <!-- Loading texts -->
+    <string name="authenticating">AUTHENTICATING…</string>
+
     <!-- Titles -->
     <string name="login_title">OMOT TERMINAL</string>
+    <string name="biometric_prompt_title">Retinal.Print Scan Required</string>
 
     <!-- Texts -->
     <string name="register_prompt_text">New operative?</string>
     <string name="login_terms_text">By authenticating, you agree to the Obsidian Directive.</string>
 
+    <!-- Snackbar (error) -->
+    <string name="biometric_error">Biometric system unavailable. Use cipher key.</string>
+    <string name="biometric_failed">Biometric verification failed. Use cipher key.</string>
+    <string name="biometric_not_enrolled">Biometric auth not enrolled for this agent.</string>
+    <string name="login_failed_credentials">Cipher key mismatch. Authentication failed.</string>
+    <string name="login_error_generic">Authentication system error. Contact command.</string>
+
+    <!-- Snackbar (success) -->
+    <string name="biometric_success">Biometric verification successful. Access granted.</string>
+    <string name="login_success">Clearance granted. Accessing terminal…</string>
+
     <!-- Subtitles -->
     <string name="login_subtitle">OBSIDIAN MOBILE OPS TERMINAL</string>
+    <string name="biometric_prompt_subtitle">Verify your identity to access OMOT terminal</string>
 
     <!-- Symbols -->
     <string name="divider">|</string>
