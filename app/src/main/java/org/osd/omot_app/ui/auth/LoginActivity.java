@@ -86,8 +86,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleInitializationFailure() {
-        UIFeedback.showSnackbar(findViewById(android.R.id.content),
-                getString(R.string.security_system_failed), true);
+        UIFeedback.showWarningSnackbar(findViewById(android.R.id.content),
+                getString(R.string.security_system_failed));
 
         // Disable login functionality
         btnAuthenticate.setEnabled(false);
@@ -169,8 +169,8 @@ public class LoginActivity extends AppCompatActivity {
             case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
                 Log.d(TAG, "No biometric credentials enrolled");
                 btnBiometric.setVisibility(View.GONE);
-                UIFeedback.showSnackbar(btnAuthenticate,
-                        getString(R.string.biometric_not_enrolled), true);
+                UIFeedback.showWarningSnackbar(btnAuthenticate,
+                        getString(R.string.biometric_not_enrolled));
                 break;
         }
     }
@@ -219,14 +219,14 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
                 Log.e(TAG, "Biometric authentication error: " + errorCode + " - " + errString);
-                UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.biometric_error), true);
+                UIFeedback.showWarningSnackbar(btnAuthenticate, getString(R.string.biometric_error));
             }
 
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 Log.i(TAG, "Biometric authentication succeeded");
-                UIFeedback.showSnackbar(btnBiometric, getString(R.string.biometric_success), false);
+                UIFeedback.showSuccessSnackbar(btnBiometric, getString(R.string.biometric_success));
 
                 authWithBiometric();
             }
@@ -235,7 +235,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
                 Log.w(TAG, "Biometric authentication failed");
-                UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.biometric_failed), true);
+                UIFeedback.showWarningSnackbar(btnAuthenticate, getString(R.string.biometric_failed));
             }
         });
 
@@ -296,13 +296,13 @@ public class LoginActivity extends AppCompatActivity {
 
             if (agent != null) {
                 // Authentication successful
-                UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.login_success), false);
+                UIFeedback.showSuccessSnackbar(btnAuthenticate, getString(R.string.login_success));
                 Log.i(TAG, "Authentication successful for agent: " + codename);
                 navigateToMain();
             } else {
                 // Authentication failed
-                UIFeedback.showSnackbar(btnAuthenticate,
-                        getString(R.string.login_failed_credentials), true);
+                UIFeedback.showWarningSnackbar(btnAuthenticate,
+                        getString(R.string.login_failed_credentials));
                 Log.w(TAG, "Authentication failed for agent: " + codename);
             }
         } catch (Exception e) {
@@ -316,7 +316,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleAuthenticationError() {
-        UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.login_error_generic), true);
+        UIFeedback.showWarningSnackbar(btnAuthenticate, getString(R.string.login_error_generic));
         btnAuthenticate.setEnabled(true);
         btnAuthenticate.setText(R.string.button_authenticate);
     }
@@ -409,12 +409,11 @@ public class LoginActivity extends AppCompatActivity {
 
                 navigateToMain();
             } else {
-                UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.store_session_failed)
-                        , true);
+                UIFeedback.showWarningSnackbar(btnAuthenticate, getString(R.string.store_session_failed));
                 spManager.clearLoginSession();
             }
         } else {
-            UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.no_stored_credentials), true);
+            UIFeedback.showWarningSnackbar(btnAuthenticate, getString(R.string.no_stored_credentials));
         }
     }
 }
