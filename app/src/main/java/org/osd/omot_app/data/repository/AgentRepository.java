@@ -144,6 +144,23 @@ public class AgentRepository {
     }
 
     /**
+     * Retrieves an agent by their codename without performing authentication checks.
+     * Useful for biometric authentication and profile management.
+     *
+     * @param codename The agent's codename.
+     * @return The Agent object if found, null otherwise.
+     */
+    public Agent getAgentByCodename(String codename) {
+        try {
+            agentDAO.getAgentByCodename(codename);
+        } catch (Exception e) {
+            Log.e(TAG, "Error retrieving agent by codename: " + codename, e);
+            return null;
+        }
+        return null;
+    }
+
+    /**
      * Initiates the Lost Credentials Protocol for password recovery.
      *
      * @param codename        The agent's codename.

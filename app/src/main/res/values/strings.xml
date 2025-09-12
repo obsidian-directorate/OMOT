@@ -40,6 +40,9 @@
     <string name="biometric_not_enrolled">Biometric auth not enrolled for this agent.</string>
     <string name="login_failed_credentials">Cipher key mismatch. Authentication failed.</string>
     <string name="login_error_generic">Authentication system error. Contact command.</string>
+    <string name="store_session_failed">Store session invalid</string>
+    <string name="no_stored_credentials">No stored credentials found.</string>
+    <string name="security_system_failed">Failed to initialize security system. Please restart the app.</string>
 
     <!-- Snackbar (success) -->
     <string name="biometric_success">Biometric verification successful. Access granted.</string>

@@ -6,11 +6,13 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
+import org.osd.omot_app.data.repository.RepositoryProvider;
+import org.osd.omot_app.security.SecurePreferencesManager;
 import org.osd.omot_app.ui.auth.LoginActivity;
+import org.osd.omot_app.ui.main.MainActivity;
 
 /**
  * The initial entry point of the OMOT application.
@@ -24,8 +26,11 @@ public class SplashActivity extends AppCompatActivity {
     // Set to 'true' to keep it on screen, 'false' to dismiss.
     private boolean keepSplashOnScreen = true;
 
+    private SecurePreferencesManager spManager;
+    private RepositoryProvider provider;
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
 
@@ -39,17 +44,15 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void initializeApp() {
-        // Simulate initialization work (e.g., checking for existing session, security checks).
-        // In a real scenario, this might involve reading from EncryptedSharedPreferences.
+        provider = RepositoryProvider.getInstance(this);
+        spManager = provider.getSpManager();
+
+        // Simulate initialization work
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             // This code will run after a short delay, simulating initialization.
 
-            // TODO: Replace this with actual logic.
-            // Example logic to check if a user is already logged in:
-            // boolean isLoggedIn = checkUserSession();
-            // Class<?> nextActivity = isLoggedIn ? MainActivity.class : LoginActivity.class;
-
-            Class<?> nextActivity = LoginActivity.class;
+            Class<?> nextActivity = spManager.isUserLoggedIn() ? MainActivity.class :
+                    LoginActivity.class;
 
             // Navigate to the next activity
             Intent intent = new Intent(SplashActivity.this, nextActivity);

@@ -25,6 +25,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.osd.omot_app.R;
 import org.osd.omot_app.data.repository.RepositoryProvider;
+import org.osd.omot_app.security.SecurePreferencesManager;
 import org.osd.omot_app.ui.main.MainActivity;
 import org.osd.omot_app.utils.UIFeedback;
 
@@ -49,6 +50,8 @@ public class LoginActivity extends AppCompatActivity {
     private BiometricPrompt prompt;
     private BiometricPrompt.PromptInfo promptInfo;
 
+    private SecurePreferencesManager spManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,10 +64,36 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
-        initializeViews();
-        initializeDependencies();
-        setupBiometricAuth();
-        setupClickListeners();
+        try {
+            initializeViews();
+            initializeDependencies();
+
+            if (areDependenciesInitialized()) {
+                checkExistingSession();
+                setupBiometricAuth();
+                setupClickListeners();
+            } else {
+                handleInitializationFailure();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to initialize LoginActivity", e);
+            handleInitializationFailure();
+        }
+    }
+
+    private boolean areDependenciesInitialized() {
+        return provider != null && spManager != null;
+    }
+
+    private void handleInitializationFailure() {
+        UIFeedback.showSnackbar(findViewById(android.R.id.content),
+                getString(R.string.security_system_failed), true);
+
+        // Disable login functionality
+        btnAuthenticate.setEnabled(false);
+        btnBiometric.setEnabled(false);
+
+        Log.e(TAG, "Critical initialization failure - authentication disabled");
     }
 
     // ----------------------------------------
@@ -76,7 +105,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onDestroy();
         // Clean up resources if needed
     }
-
 
     // --------------------------------------
     // ---------- onCreate methods ----------
@@ -97,6 +125,29 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initializeDependencies() {
         provider = RepositoryProvider.getInstance(this);
+        spManager = provider.getSpManager();
+    }
+
+    private void checkExistingSession() {
+        try {
+            if (spManager.isUserLoggedIn()) {
+                String storedCodename = spManager.getAgentCodename();
+                if (storedCodename != null) {
+                    edCodename.setText(storedCodename);
+
+                    // If biometric is enabled, auto-prompt for biometric auth
+                    if (spManager.isBiometricEnabled()) {
+                        btnBiometric.postDelayed(() -> {
+                            if (prompt != null) {
+                                prompt.authenticate(promptInfo);
+                            }
+                        }, 500);    // Short delay for better UX
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking existing session", e);;
+        }
     }
 
     private void setupBiometricAuth() {
@@ -177,9 +228,7 @@ public class LoginActivity extends AppCompatActivity {
                 Log.i(TAG, "Biometric authentication succeeded");
                 UIFeedback.showSnackbar(btnBiometric, getString(R.string.biometric_success), false);
 
-                // TODO: Retrieve stored codename from EncryptedSharedPreferences and authenticate
-                // For now, we'll just show a success message
-                // authenticateWithBiometric();
+                authWithBiometric();
             }
 
             @Override
@@ -249,9 +298,6 @@ public class LoginActivity extends AppCompatActivity {
                 // Authentication successful
                 UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.login_success), false);
                 Log.i(TAG, "Authentication successful for agent: " + codename);
-
-                // TODO: Store session in EncryptedSharedPreferences
-                // TODO: Navigate to MainActivity
                 navigateToMain();
             } else {
                 // Authentication failed
@@ -340,6 +386,35 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "Failed to create cipher for biometrics", e);
             return null;
+        }
+    }
+
+    /**
+     * Enhanced biometric authentication that uses stored credentials.
+     */
+    private void authWithBiometric() {
+        String storedCodename = spManager.getAgentCodename();
+        if (storedCodename != null) {
+            var agentRepository = provider.getAgentRepository();
+            var agent = agentRepository.getAgentByCodename(storedCodename);
+
+            if (agent != null) {
+                // Simulate successful authentication
+                spManager.saveLoginSession(
+                        agent.getAgentID(),
+                        agent.getCodename(),
+                        agent.getClearanceLevel().getClearanceCode(),
+                        agent.isBiometricEnabled()
+                );
+
+                navigateToMain();
+            } else {
+                UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.store_session_failed)
+                        , true);
+                spManager.clearLoginSession();
+            }
+        } else {
+            UIFeedback.showSnackbar(btnAuthenticate, getString(R.string.no_stored_credentials), true);
         }
     }
 }

@@ -7,6 +7,7 @@ import org.osd.omot_app.data.dao.AgentDAO;
 import org.osd.omot_app.data.dao.AgentDAOImpl;
 import org.osd.omot_app.data.dao.ClearanceLevelDAO;
 import org.osd.omot_app.data.dao.ClearanceLevelDAOImpl;
+import org.osd.omot_app.security.SecurePreferencesManager;
 
 /**
  * Provides centralized access to repository instances.
@@ -19,6 +20,7 @@ public class RepositoryProvider {
 
     private AgentRepository agentRepository;
     private ClearanceLevelDAO clearanceLevelDAO;
+    private SecurePreferencesManager spManager;
 
     private RepositoryProvider(Context context) {
         this.context = context;
@@ -45,6 +47,17 @@ public class RepositoryProvider {
             clearanceLevelDAO = new ClearanceLevelDAOImpl(helper);
         }
         return clearanceLevelDAO;
+    }
+
+    public SecurePreferencesManager getSpManager() {
+        if (spManager == null) {
+            try {
+                spManager = new SecurePreferencesManager(context);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to initialize secure preferences", e);
+            }
+        }
+        return spManager;
     }
 
     /**
