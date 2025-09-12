@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.osd.omot_app.R;
 import org.osd.omot_app.data.repository.RepositoryProvider;
 import org.osd.omot_app.security.SecurePreferencesManager;
+import org.osd.omot_app.security.SecurityChecker;
 import org.osd.omot_app.ui.auth.LoginActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnLogout;
 
     private SecurePreferencesManager spManager;
+    private boolean isDevelopment = SecurityChecker.isDebugBuild(this) || SecurityChecker.isRunningOnEmulator();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Security check on main activity launch
+        if (SecurityChecker.detectSecurityThreats(this, isDevelopment)) {
+            handleSecurityBreach();
+            return;
+        }
 
         RepositoryProvider provider = RepositoryProvider.getInstance(this);
         spManager = provider.getSpManager();
@@ -73,5 +82,11 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+    
+    private void handleSecurityBreach() {
+        spManager.clearLoginSession();
+        Toast.makeText(this, "Security breach detected. Logging out.", Toast.LENGTH_SHORT).show();
+        navigateToLogin();
     }
 }

@@ -58,6 +58,13 @@ public class UIFeedback {
     }
 
     /**
+     * Shows an error-themed Snackbar.
+     */
+    public static void showErrorSnackbar(View view, String message) {
+        showSnackbar(view, message, true);
+    }
+
+    /**
      * Generic method for showing themed snackbars.
      */
     private static void showThemedSnackbar(View view, String message, int backgroundColorRes,

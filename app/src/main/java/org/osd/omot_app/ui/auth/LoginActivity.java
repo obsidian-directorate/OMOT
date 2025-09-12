@@ -26,6 +26,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.osd.omot_app.R;
 import org.osd.omot_app.data.repository.RepositoryProvider;
 import org.osd.omot_app.security.SecurePreferencesManager;
+import org.osd.omot_app.security.SecurityChecker;
 import org.osd.omot_app.ui.main.MainActivity;
 import org.osd.omot_app.utils.UIFeedback;
 
@@ -249,6 +250,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
+        // First check if environment is still secure (with development awareness
+        boolean isDevelopment =
+                SecurityChecker.isDebugBuild(this) || SecurityChecker.isRunningOnEmulator();
+        boolean hasThreats = SecurityChecker.detectSecurityThreats(this, isDevelopment);
+
+        if (hasThreats && !isDevelopment) {
+            UIFeedback.showWarningSnackbar(btnAuthenticate, getString(R.string.security_threat_detected));
+            if (spManager != null) {
+                spManager.clearLoginSession();  // Wipe any existing session
+            }
+            return;
+        }
+
         // Get input values
         String codename = edCodename.getText().toString().trim();
         String password = edCipherKey.getText().toString().trim();
@@ -301,7 +315,7 @@ public class LoginActivity extends AppCompatActivity {
                 navigateToMain();
             } else {
                 // Authentication failed
-                UIFeedback.showWarningSnackbar(btnAuthenticate,
+                UIFeedback.showErrorSnackbar(btnAuthenticate,
                         getString(R.string.login_failed_credentials));
                 Log.w(TAG, "Authentication failed for agent: " + codename);
             }

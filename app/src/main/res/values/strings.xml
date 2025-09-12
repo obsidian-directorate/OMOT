@@ -34,15 +34,18 @@
     <string name="register_prompt_text">New operative?</string>
     <string name="login_terms_text">By authenticating, you agree to the Obsidian Directive.</string>
 
-    <!-- Snackbar (error) -->
+    <!-- Snackbar (warning) -->
     <string name="biometric_error">Biometric system unavailable. Use cipher key.</string>
     <string name="biometric_failed">Biometric verification failed. Use cipher key.</string>
     <string name="biometric_not_enrolled">Biometric auth not enrolled for this agent.</string>
-    <string name="login_failed_credentials">Cipher key mismatch. Authentication failed.</string>
     <string name="login_error_generic">Authentication system error. Contact command.</string>
     <string name="store_session_failed">Store session invalid</string>
     <string name="no_stored_credentials">No stored credentials found.</string>
     <string name="security_system_failed">Failed to initialize security system. Please restart the app.</string>
+
+    <!-- Snackbar (error) -->
+    <string name="login_failed_credentials">Cipher key mismatch. Authentication failed.</string>
+    <string name="security_threat_detected">Security threat detected. Login disabled.</string>
 
     <!-- Snackbar (success) -->
     <string name="biometric_success">Biometric verification successful. Access granted.</string>
