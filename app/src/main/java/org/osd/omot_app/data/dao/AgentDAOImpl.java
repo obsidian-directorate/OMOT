@@ -121,6 +121,48 @@ public class AgentDAOImpl implements AgentDAO {
     }
 
     @Override
+    public boolean isCodenameAvailable(String codename) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        String selection = DBContract.AgentEntry.COLUMN_CODENAME + " = ?";
+        String[] selectionArgs = { codename };
+
+        try (Cursor cursor = db.query(
+                DBContract.AgentEntry.TABLE_NAME,
+                new String[]{DBContract.AgentEntry.COLUMN_AGENT_ID},
+                selection,
+                selectionArgs,
+                null, null, null
+        )) {
+            return cursor == null || cursor.getCount() == 0;
+        } catch (Exception e) {
+            Log.e(TAG, "Error checking codename availability: " + codename, e);
+            return false; // On error, assume codename is not available
+        }
+    }
+
+    @Override
+    public int getMaxAgentIDNumber() {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        int maxID = 0;
+
+        try (Cursor cursor = db.query(
+                DBContract.AgentEntry.TABLE_NAME,
+                new String[]{"MAX(CAST(substr(" + DBContract.AgentEntry.COLUMN_AGENT_ID + ", 7) " +
+                        "AS INTEGER)) as max_id"},
+                null, null, null, null, null
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                maxID = cursor.getInt(0);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting max agent ID", e);
+        }
+
+        return maxID;
+    }
+
+
+    @Override
     public int updateAgent(Agent agent) {
         SQLiteDatabase db = helper.getWritableDatabase();
 

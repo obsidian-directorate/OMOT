@@ -6,6 +6,7 @@ import android.util.Log;
 import org.osd.omot_app.data.dao.AgentDAO;
 import org.osd.omot_app.data.model.Agent;
 import org.osd.omot_app.data.model.ClearanceLevel;
+import org.osd.omot_app.data.results.RegistrationResult;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -80,67 +81,92 @@ public class AgentRepository {
     /**
      * Registers a new agent in the system. Generates a new salt and hashes the password.
      *
-     * @param agentID            The unique agent ID (e.g., "AGENT-001").
      * @param codename           The chosen codename (must be unique).
      * @param password           The plaintext password (Cipher Key).
      * @param securityQuestion   The security question for recovery.
      * @param securityAnswer     The plaintext answer to the security question.
-     * @param clearanceCode      The clearance level code (e.g., "BETA").
+     * @param enableBiometric    Whether to enable biometric authentication.
      * @return true if registration was successful, false otherwise.
      */
-    public boolean registerAgent(String agentID, String codename, String password,
-                                 String securityQuestion, String securityAnswer,
-                                 String clearanceCode) {
-        // 1. Check if codename is already taken
-        if (agentDAO.getAgentByCodename(codename) != null) {
-            Log.w(TAG, "Registration failed: Codename already exists: " + codename);
-            return false;
+    public RegistrationResult registerAgent(String codename, String password,
+                                            String securityQuestion, String securityAnswer,
+                                            boolean enableBiometric) {
+        try {
+            // 1. Validate input parameters
+            if (codename == null || codename.trim().isEmpty()) {
+                return new RegistrationResult(false, "Codename can't be empty");
+            }
+
+            if (password == null || password.length() < 8) {
+                return new RegistrationResult(false, "Cipher key must be at least 8 characters");
+            }
+
+            if (securityQuestion == null || securityQuestion.trim().isEmpty()) {
+                return new RegistrationResult(false, "Security question cannot be empty");
+            }
+
+            if (securityAnswer == null || securityAnswer.trim().isEmpty()) {
+                return new RegistrationResult(false, "Security answer cannot be empty");
+            }
+
+            // 2. Check if codename is already taken
+            if (!agentDAO.isCodenameAvailable(codename)) {
+                return new RegistrationResult(false, "Codename already taken. Choose another");
+            }
+
+            // 3. Generate unique agent ID
+            String agentID = generateAgentID();
+            if (agentID == null) {
+                return new RegistrationResult(false, "Failed to generate agent ID");
+            }
+
+            // 4. Generate a unique salt for this agent
+            String salt = generateSalt();
+
+            // 5. Hash the password with the generated salt
+            String hashedPassword = hashPassword(password, salt);
+            if (hashedPassword == null) {
+                return new RegistrationResult(false, "Password hashing failed");
+            }
+
+            // 6. Hash the security answer (using the same salt for simplicity)
+            String hashedSecurityAnswer = hashPassword(securityAnswer, salt);
+            if (hashedSecurityAnswer == null) {
+                return new RegistrationResult(false, "Security answer hashing failed");
+            }
+
+            // 7. Create the new Agent object with BETA clearance (default for new agents)
+            Agent newAgent = new Agent(
+                    agentID,
+                    codename.trim(),
+                    hashedPassword,
+                    salt,
+                    securityQuestion.trim(),
+                    hashedSecurityAnswer,
+                    ClearanceLevel.BETA,    // New agents start at BETAA level
+                    enableBiometric,
+                    0,     // last_login_timestamp
+                    0,     // failed_login_attempts
+                    0,     // last_failed_login_timestamp
+                    false  // account_locked
+            );
+
+            // 8. Insert into database
+            long result = agentDAO.insertAgent(newAgent);
+            boolean success = result != -1;
+
+            if (success) {
+                Log.i(TAG, "Agent registered successfully: " + codename + " (ID: " + agentID + ")");
+                return new RegistrationResult(true, "Registration successful", agentID);
+            } else {
+                Log.e(TAG, "Registration failed: Database insertion failed for: " + codename);
+                return new RegistrationResult(false, "Database error. Please try again.");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Registration failed with error: " + e.getMessage(), e);
+            return new RegistrationResult(false,
+                    "Unexpected error during registration: " + e.getMessage());
         }
-
-        // 2. Generate a unique salt for this agent
-        String salt = generateSalt();
-
-        // 3. Hash the password with the generated salt
-        String hashedPassword = hashPassword(password, salt);
-        if (hashedPassword == null) {
-            Log.e(TAG, "Registration failed: Password hashing failed for: " + codename);
-            return false;
-        }
-
-        // 4. Hash the security answer (using the same salt or a new one? Using same for simplicity)
-        String hashedSecurityAnswer = hashPassword(securityAnswer, salt);
-        if (hashedSecurityAnswer == null) {
-            Log.e(TAG, "Registration failed: Security answer hashing failed for: " + codename);
-            return false;
-        }
-
-        // 5. Create the new Agent object
-        Agent newAgent = new Agent(
-                agentID,
-                codename,
-                hashedPassword,
-                salt,
-                securityQuestion,
-                hashedSecurityAnswer,
-                ClearanceLevel.fromCode(clearanceCode),
-                false,  // biometric_enabled default to false
-                0,      // last_login_timestamp
-                0,      // failed_login_attempts
-                0,      // last_failed_login_timestamp
-                false   // account_locked
-        );
-        
-        // 6. Insert into database
-        long result = agentDAO.insertAgent(newAgent);
-        boolean success = result != -1;
-        
-        if (success) {
-            Log.i(TAG, "Agent registered successfully: " + codename);
-        } else {
-            Log.e(TAG, "Registration failed: Database insertion failed for: " + codename);
-        }
-
-        return success;
     }
 
     /**
@@ -307,5 +333,16 @@ public class AgentRepository {
         byte[] salt = new byte[SALT_LENGTH];
         secureRandom.nextBytes(salt);
         return Base64.encodeToString(salt, Base64.NO_WRAP);
+    }
+
+    private String generateAgentID() {
+        try {
+            int maxID = agentDAO.getMaxAgentIDNumber();
+            int nextID = maxID + 1;
+            return String.format("AGENT-%03d", nextID);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to generate agent ID", e);
+            return null;
+        }
     }
 }

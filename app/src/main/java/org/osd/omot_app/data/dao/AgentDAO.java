@@ -38,6 +38,19 @@ public interface AgentDAO {
     List<Agent> getAllAgents();
 
     /**
+     * Checks if a codename is already taken by another agent.
+     * @param codename The codename to check.
+     * @return true if the codename is available, false if already taken.
+     */
+    boolean isCodenameAvailable(String codename);
+
+    /**
+     * Gets the highest agent ID number to generate the next sequential ID.
+     * @return The highest numeric part of agent IDs, or 0 if no agents exist.
+     */
+    int getMaxAgentIDNumber();
+
+    /**
      * Updates an existing agent's information in the database.
      * @param agent The agent object with updated values.
      * @return The number of rows affected (should be 1 if successful).
