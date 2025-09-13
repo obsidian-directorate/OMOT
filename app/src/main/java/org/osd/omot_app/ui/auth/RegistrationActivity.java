@@ -2,6 +2,9 @@ package org.osd.omot_app.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.TextView;
 
@@ -47,6 +50,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         initializeViews();
         initializeDependencies();
+        setupTextWatchers();
         setupClickListener();
     }
 
@@ -59,7 +63,6 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onDestroy();
         // Clean up if needed
     }
-
 
     // --------------------------------------
     // ---------- onCreate methods ----------
@@ -87,6 +90,32 @@ public class RegistrationActivity extends AppCompatActivity {
         agentRepository = provider.getAgentRepository();
     }
 
+    private void setupTextWatchers() {
+        // Real-time validation for password matching
+        edConfirmCipherKey.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                validatePasswordMatch();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+        });
+
+        // Clear errors when user starts typing
+        setupClearErrorOnType(edCodename, edLayoutCodename);
+        setupClearErrorOnType(edCipherKey, edLayoutCipherKey);
+        setupClearErrorOnType(edSecurityQuestion, edLayoutQuestion);
+        setupClearErrorOnType(edSecurityAnswer, edLayoutAnswer);
+    }
+
     private void setupClickListener() {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,11 +130,39 @@ public class RegistrationActivity extends AppCompatActivity {
                 navigateToLogin();
             }
         });
+
+        // Terms checkbox validation on submit
+        chkTerms.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!isChecked && chkTerms.isPressed()) {
+                UIFeedback.showErrorSnackbar(btnSubmit, getString(R.string.registration_error_terms));
+            }
+        });
     }
 
     // -------------------------------------
     // ---------- Private methods ----------
     // -------------------------------------
+
+    private void setupClearErrorOnType(TextInputEditText editText, TextInputLayout layout) {
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (layout.getError() != null) {
+                    layout.setError(null);
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+        });
+    }
 
     private void attemptRegistration() {
         // Get input values
@@ -132,7 +189,7 @@ public class RegistrationActivity extends AppCompatActivity {
         // Attempt registration on background thread
         new Thread(() -> {
             try {
-                Thread.sleep(1000); // Simulate processing delay
+                Thread.sleep(1500); // Simulate processing delay
 
                 runOnUiThread(() -> {
                     performRegistration(codename, cipherKey, securityQuestion, securityAnswer, enableBiometric);
@@ -152,6 +209,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
         if (codename.isEmpty()) {
             edLayoutCodename.setError(getString(R.string.validation_field_required));
+            isValid = false;
+        } else if (codename.length() < 3) {
+            edLayoutCodename.setError(getString(R.string.validation_codename_length));
             isValid = false;
         }
 
@@ -174,10 +234,16 @@ public class RegistrationActivity extends AppCompatActivity {
         if (securityQuestion.isEmpty()) {
             edLayoutQuestion.setError(getString(R.string.validation_field_required));
             isValid = false;
+        } else if (securityQuestion.length() < 10) {
+            edLayoutQuestion.setError(getString(R.string.validation_question_length));
+            isValid = false;
         }
 
         if (securityAnswer.isEmpty()) {
             edLayoutAnswer.setError(getString(R.string.validation_field_required));
+            isValid = false;
+        } else if (securityAnswer.length() < 3) {
+            edLayoutAnswer.setError(getString(R.string.validation_answer_length));
             isValid = false;
         }
 
@@ -187,6 +253,17 @@ public class RegistrationActivity extends AppCompatActivity {
         }
 
         return isValid;
+    }
+
+    private void validatePasswordMatch() {
+        String cipherKey = edCipherKey.getText().toString().trim();
+        String confirmCipherKey = edConfirmCipherKey.getText().toString().trim();
+
+        if (!confirmCipherKey.isEmpty() && !cipherKey.equals(confirmCipherKey)) {
+            edLayoutConfirm.setError(getString(R.string.registration_error_password_mismatch));
+        } else if (edLayoutConfirm.getError() != null) {
+            edLayoutConfirm.setError(null);
+        }
     }
 
     private void clearAllErrors() {
@@ -204,9 +281,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     securityQuestion, securityAnswer, enableBiometric);
 
             if (result.isSuccess()) {
-                UIFeedback.showSuccessSnackbar(btnSubmit, getString(R.string.registration_success));
-                // Auto-login after successful registration]
-                navigateToLoginWithPrefilledCodename(codename);
+                handleRegistrationSuccess(codename, result.getAgentID());
             } else {
                 handleRegistrationError(getString(R.string.registration_error_generic));
             }
@@ -220,16 +295,52 @@ public class RegistrationActivity extends AppCompatActivity {
     private void setLoadingState(boolean isLoading) {
         btnSubmit.setEnabled(!isLoading);
         btnSubmit.setText(isLoading ? getString(R.string.processing) : getString(R.string.button_registration));
+
+        // Disable form interactions during loading
+        setFormEnabled(!isLoading);
+    }
+
+    private void setFormEnabled(boolean enabled) {
+        edCodename.setEnabled(enabled);
+        edCipherKey.setEnabled(enabled);
+        edConfirmCipherKey.setEnabled(enabled);
+        edSecurityQuestion.setEnabled(enabled);
+        edSecurityAnswer.setEnabled(enabled);
+        chkBiometric.setEnabled(enabled);
+        chkTerms.setEnabled(enabled);
+        tvBackToLogin.setEnabled(enabled);
+    }
+
+    private void handleRegistrationSuccess(String codename, String agentID) {
+        // Show success message with agent ID
+        String successMessage = getString(R.string.registration_success) + " Your agent ID: " + agentID;
+        UIFeedback.showSuccessSnackbar(btnSubmit, successMessage);
+
+        // Delay navigation to show success message
+        new Handler().postDelayed(() -> {
+            navigateToLoginWithPrefilledCodename(codename);
+        }, 2000);
     }
 
     private void handleRegistrationError(String errorMessage) {
-        UIFeedback.showErrorSnackbar(btnSubmit, errorMessage);
+        // Handle specific error types with appropriate UI feedback
+        if (errorMessage.contains("already taken")) {
+            edLayoutCodename.setError(getString(R.string.registration_error_codename_taken));
+            edCodename.requestFocus();
+        } else if (errorMessage.contains("Cipher key")) {
+            edLayoutCipherKey.setError(errorMessage);
+            edCipherKey.requestFocus();
+        } else {
+            UIFeedback.showErrorSnackbar(btnSubmit, errorMessage);
+        }
+
         setLoadingState(false);
     }
 
     private void navigateToLoginWithPrefilledCodename(String codename) {
         Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
         intent.putExtra("prefilled_codename", codename);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
     }

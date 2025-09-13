@@ -18,6 +18,11 @@
     <string name="login_validation_codename_empty">Codename required for authentication</string>
     <string name="login_validation_password_empty">Cipher key required for authentication</string>
     <string name="validation_field_required">Field required for clearance verification</string>
+    <string name="registration_error_password_mismatch">Cipher key verification failed</string>
+    <string name="registration_error_codename_taken">Codename already active in Directorate records.</string>
+    <string name="validation_codename_length">Codename must be at least 3 characters</string>
+    <string name="validation_question_length">Security question must be more specific</string>
+    <string name="validation_answer_length">Security answer too short</string>
 
     <!-- Hints -->
     <string name="codename_hint">Codename</string>
@@ -37,7 +42,7 @@
 
     <!-- Loading texts -->
     <string name="authenticating">AUTHENTICATING…</string>
-    <string name="processing">PROCESSING…</string>
+    <string name="processing">PROCESSING CLEARANCE…</string>
 
     <!-- Titles -->
     <string name="login_title">OMOT TERMINAL</string>
@@ -61,8 +66,7 @@
     <string name="login_failed_credentials">Cipher key mismatch. Authentication failed.</string>
     <string name="security_threat_detected">Security threat detected. Login disabled.</string>
     <string name="registration_error_terms">Directorate acceptance required for clearance.</string>
-    <string name="registration_error_generic">Clearance request denied. Review your
-        submission.</string>
+    <string name="registration_error_generic">Clearance request denied. Review your submission.</string>
 
     <!-- Snackbar (success) -->
     <string name="biometric_success">Biometric verification successful. Access granted.</string>

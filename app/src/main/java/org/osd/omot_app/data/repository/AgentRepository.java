@@ -97,6 +97,10 @@ public class AgentRepository {
                 return new RegistrationResult(false, "Codename can't be empty");
             }
 
+            if (codename.length() < 3) {
+                return new RegistrationResult(false, "Codename must be at least 3 characters");
+            }
+
             if (password == null || password.length() < 8) {
                 return new RegistrationResult(false, "Cipher key must be at least 8 characters");
             }
@@ -105,8 +109,16 @@ public class AgentRepository {
                 return new RegistrationResult(false, "Security question cannot be empty");
             }
 
+            if (securityQuestion.length() < 10) {
+                return new RegistrationResult(false, "Security question must be more specific");
+            }
+
             if (securityAnswer == null || securityAnswer.trim().isEmpty()) {
                 return new RegistrationResult(false, "Security answer cannot be empty");
+            }
+
+            if (securityAnswer.length() < 3) {
+                return new RegistrationResult(false, "Security answer too short");
             }
 
             // 2. Check if codename is already taken
@@ -157,10 +169,10 @@ public class AgentRepository {
 
             if (success) {
                 Log.i(TAG, "Agent registered successfully: " + codename + " (ID: " + agentID + ")");
-                return new RegistrationResult(true, "Registration successful", agentID);
+                return new RegistrationResult(true, "Registration successful", agentID, codename);
             } else {
                 Log.e(TAG, "Registration failed: Database insertion failed for: " + codename);
-                return new RegistrationResult(false, "Database error. Please try again.");
+                return new RegistrationResult(false, "Database error. Please try again.", codename);
             }
         } catch (Exception e) {
             Log.e(TAG, "Registration failed with error: " + e.getMessage(), e);
