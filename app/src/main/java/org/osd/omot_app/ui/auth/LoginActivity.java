@@ -69,6 +69,12 @@ public class LoginActivity extends AppCompatActivity {
             initializeViews();
             initializeDependencies();
 
+            String prefilledCodename = getIntent().getStringExtra("prefilled_codename");
+            if (prefilledCodename != null) {
+                edCodename.setText(prefilledCodename);
+                edCipherKey.requestFocus(); // Move focus to password field
+            }
+
             if (areDependenciesInitialized()) {
                 checkExistingSession();
                 setupBiometricAuth();
@@ -347,8 +353,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showRegisterScreen() {
-        // TODO: Implement user registration flow
-        Toast.makeText(this, "Directorate Access Request screen", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+        startActivity(intent);
     }
 
     /**

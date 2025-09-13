@@ -5,6 +5,11 @@
     <string name="button_authenticate">AUTHENTICATE</string>
     <string name="button_biometric">BIOMETRIC SCAN</string>
     <string name="button_biometric_prompt_negative">Use Cipher Key Instead</string>
+    <string name="button_registration">REQUEST CLEARANCE</string>
+
+    <!-- Checkbox labels -->
+    <string name="checkbox_biometric">Enable Biometric Scanner access</string>
+    <string name="checkbox_terms">I accept the Obsidian Directorate and Security Protocol</string>
 
     <!-- Descriptions -->
     <string name="biometric_prompt_description">Authenticate using your biometric credentials</string>
@@ -12,23 +17,32 @@
     <!-- Edit text layouts -->
     <string name="login_validation_codename_empty">Codename required for authentication</string>
     <string name="login_validation_password_empty">Cipher key required for authentication</string>
+    <string name="validation_field_required">Field required for clearance verification</string>
 
     <!-- Hints -->
     <string name="codename_hint">Codename</string>
     <string name="cipher_key_hint">Cipher Key</string>
+    <string name="proposed_codename_hint">Proposed Codename</string>
+    <string name="proposed_cipher_key_hint">Proposed Cipher Key</string>
+    <string name="confirm_cipher_key_hint">Confirm Cipher Key</string>
+    <string name="security_question_hint">Security Verification Question</string>
+    <string name="security_answer_hint">Security Answer</string>
 
     <!-- Links -->
     <string name="lost_credentials_link">LOST CREDENTIALS PROTOCOL</string>
     <string name="register_link">Request Directorate Access</string>
     <string name="terms_link">Terms of Service</string>
     <string name="privacy_link">Privacy Protocol</string>
+    <string name="back_to_login_link">Back to Login</string>
 
     <!-- Loading texts -->
     <string name="authenticating">AUTHENTICATING…</string>
+    <string name="processing">PROCESSING…</string>
 
     <!-- Titles -->
     <string name="login_title">OMOT TERMINAL</string>
     <string name="biometric_prompt_title">Retinal.Print Scan Required</string>
+    <string name="registration_title">DIRECTORATE ACCESS REQUEST</string>
 
     <!-- Texts -->
     <string name="register_prompt_text">New operative?</string>
@@ -46,14 +60,20 @@
     <!-- Snackbar (error) -->
     <string name="login_failed_credentials">Cipher key mismatch. Authentication failed.</string>
     <string name="security_threat_detected">Security threat detected. Login disabled.</string>
+    <string name="registration_error_terms">Directorate acceptance required for clearance.</string>
+    <string name="registration_error_generic">Clearance request denied. Review your
+        submission.</string>
 
     <!-- Snackbar (success) -->
     <string name="biometric_success">Biometric verification successful. Access granted.</string>
     <string name="login_success">Clearance granted. Accessing terminal…</string>
+    <string name="registration_success">Clearance request granted. Welcome to the
+        Directorate, Agent.</string>
 
     <!-- Subtitles -->
     <string name="login_subtitle">OBSIDIAN MOBILE OPS TERMINAL</string>
     <string name="biometric_prompt_subtitle">Verify your identity to access OMOT terminal</string>
+    <string name="registration_subtitle">Apply for Obsidian Directorate clearance</string>
 
     <!-- Symbols -->
     <string name="divider">|</string>

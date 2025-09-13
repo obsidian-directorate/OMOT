@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="?attr/colorSurface"
+    tools:context=".ui.auth.RegistrationActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_xlarge"
+        android:orientation="vertical">
+
+        <!-- Header section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_splash_static_logo"
+                android:contentDescription="@string/registration_title"
+                app:tint="@color/md_theme_dark_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:text="@string/registration_title"
+                android:textAppearance="@style/TextAppearance.OMOT.Headline"
+                android:textAlignment="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_mini"
+                android:text="@string/registration_subtitle"
+                android:textAppearance="@style/TextAppearance.OMOT.Body" />
+        </LinearLayout>
+
+        <!-- Codename input -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.OMOT.TextInputLayout"
+            android:id="@+id/ed_layout_codename"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:hint="@string/proposed_codename_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_codename"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Password input -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.OMOT.TextInputLayout"
+            android:id="@+id/ed_layout_cipher_key"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:hint="@string/proposed_cipher_key_hint"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_cipher_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:imeOptions="actionNext"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Confirm password input -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.OMOT.TextInputLayout"
+            android:id="@+id/ed_layout_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:hint="@string/confirm_cipher_key_hint"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_confirm_cipher_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:imeOptions="actionNext"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Security question input -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.OMOT.TextInputLayout"
+            android:id="@+id/ed_layout_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            android:hint="@string/security_question_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_security_question"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:imeOptions="actionNext"
+                android:maxLines="2" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Security answer input -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.OMOT.TextInputLayout"
+            android:id="@+id/ed_layout_answer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_large"
+            android:hint="@string/security_answer_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_security_answer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
+                android:imeOptions="actionDone" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Biometric preference -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/chk_biometric"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_large"
+            android:layout_gravity="start"
+            android:text="@string/checkbox_biometric"
+            android:textAppearance="@style/TextAppearance.OMOT.Body"
+            app:buttonTint="@color/obsidian_accent_blue"
+            app:useMaterialThemeColors="true" />
+
+        <!-- Terms acceptance -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/chk_terms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xlarge"
+            android:layout_gravity="start"
+            android:text="@string/checkbox_terms"
+            android:textAppearance="@style/TextAppearance.OMOT.Body"
+            app:buttonTint="@color/obsidian_accent_blue"
+            app:useMaterialThemeColors="true" />
+
+        <!-- Submit button -->
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.OMOT.Button.Primary"
+            android:id="@+id/btn_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_registration" />
+
+        <!-- Back to Login link -->
+        <TextView
+            android:id="@+id/tv_back_to_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/spacing_xlarge"
+            android:padding="@dimen/spacing_small"
+            android:text="@string/back_to_login_link"
+            android:textAppearance="@style/TextAppearance.OMOT.Body" />
+    </LinearLayout>
+
+</ScrollView>
